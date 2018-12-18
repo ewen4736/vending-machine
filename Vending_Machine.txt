@@ -1,0 +1,173 @@
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+void MachineInitialization(int&, int&, int&);
+
+void InitialBalance(float&);
+
+int main()
+{
+	int quarters_machine = 0;
+	int dimes_machine = 0;
+	int nickels_machine = 0;
+	int machine_balance = 0;
+	int cents_input = 0;
+	int change = 0;
+	int quarters_change = 0;
+	int dimes_change = 0;
+	int nickels_change = 0;
+	int quarters_left = 0;
+	int dimes_left = 0;
+	int nickels_left = 0;
+	int remaining_change_1 = 0;
+	int remaining_change_2 = 0;
+	int valid_transactions = 0;
+	int final_cents = 0;
+	float initial_balance = 0;
+	float final_balance = 0;
+
+	//Initialization
+	MachineInitialization(quarters_machine, dimes_machine, nickels_machine);
+
+	cout << "There are " << quarters_machine << " quarters, " << dimes_machine << " dimes, and " << nickels_machine << " nickels." << endl << endl;
+	machine_balance = (25 * quarters_machine) + (10 * dimes_machine) + (5 * nickels_machine);
+
+	initial_balance = machine_balance / 100.0;
+
+	InitialBalance(initial_balance);
+
+	//Handle transactions
+	do
+	{
+		//Get user input
+		cout << endl;
+		cout << "Enter a purchase amount [0 to 100]: ";
+		cin >> cents_input;
+		cout << "You entered a purchase amount of " << cents_input << endl;
+
+		//Check for sentinel.
+		if (cents_input == 0) {
+			continue;
+		}
+
+		//Validate user input
+		if (cents_input % 5 != 0)
+		{
+			// User input is not divisible by 5
+			cout << "Invalid amount (not a multiple of 5). Try again." << endl;
+			continue;
+		}
+
+		else if (cents_input > 100)
+		{
+			// User input exceeds one dollar, or 100 cents
+			cout << "Invalid amount (outside valid range). Try again." << endl;
+			continue;
+		}
+		else
+		{
+			// User input is validated
+			cout << "Please insert one-dollar bill." << endl;
+			cout << "Processing your purchase . . . " << endl;
+			valid_transactions++;
+		}
+		change = 100 - cents_input;
+
+		if (change > machine_balance)
+		{
+			// Change to be returned exceeds available amount in coins
+			cout << "Insufficient changes!" << endl;
+			cout << "Your transaction cannot be processed." << endl;
+			cout << "Please take back your dollar bill." << endl;
+			valid_transactions--;
+			continue;
+		}
+
+
+		// Calculating change to be given back
+		quarters_change = change / 25;
+
+		if (quarters_change > quarters_machine)
+		{
+			quarters_change = quarters_machine;
+		}
+		remaining_change_1 = change - (quarters_change * 25);
+
+		dimes_change = remaining_change_1 / 10;
+		if (dimes_change > dimes_machine)
+		{
+			dimes_change = dimes_machine;
+		}
+		remaining_change_2 = remaining_change_1 - (dimes_change * 10);
+
+		nickels_change = remaining_change_2 / 5;
+		if (nickels_change > nickels_machine)
+		{
+			nickels_change = nickels_machine;
+		}
+
+		if ((quarters_change > quarters_machine) && (dimes_change > dimes_machine) && (nickels_change > nickels_machine))
+		{
+			cout << "Insufficient changes!" << endl;
+			cout << "Your transaction cannot be processed." << endl;
+			cout << "Please take back your dollar bill." << endl;
+			continue;
+		}
+
+
+		// Print out change returned to user
+		quarters_machine = quarters_machine - quarters_change;
+		dimes_machine = dimes_machine - dimes_change;
+		nickels_machine = nickels_machine - nickels_change;
+		cout << "Your change of " << change << " is given as: " << endl;
+		cout << "    Quarters : " << quarters_change << endl;
+		cout << "    Dimes    : " << dimes_change << endl;
+		cout << "    Nickels  : " << nickels_change << endl;
+
+		machine_balance = machine_balance - (25 * quarters_change) - (10 * dimes_change) - (5 * nickels_change);
+
+	} while (cents_input != 0);
+
+	//Print final report.
+	cout << "Final report is being generated . . . " << endl;
+	cout << "There are " << valid_transactions << " valid transactions." << endl;
+	cout << "      Number of dollars   : " << valid_transactions << endl;
+
+	cout << "      Number of quarters  : " << quarters_machine << endl;
+	cout << "      Number of dimes     : " << dimes_machine << endl;
+	cout << "      Number of nickels   : " << nickels_machine << endl;
+
+
+	machine_balance = (quarters_machine * 25) + (dimes_machine * 10) + (nickels_machine * 5);
+	final_cents = (valid_transactions * 100) + machine_balance;
+	final_balance = (final_cents / 100.0);
+
+	cout << "      Machine balance     : $" << setprecision(2) << fixed << showpoint << final_balance << endl;
+	cout << "Machine is shutting down. Good bye." << endl;
+
+
+	system("pause");
+	return 0;
+}
+
+void MachineInitialization(int& quarters_machine, int& dimes_machine, int& nickels_machine)
+{
+	cout << "Vending Machine Version 1 by Elizabeth Wen" << endl << endl;
+
+	cout << "Fill up machine with changes. Please wait . . . " << endl;
+	cout << "Enter number of quarters, dimes, and nickels: ";
+	cin >> quarters_machine;
+	cin >> dimes_machine;
+	cin >> nickels_machine;
+}
+
+void InitialBalance(float& initial_balance)
+{
+	cout << "Initial machine balance is $" << setprecision(2) << fixed << showpoint << initial_balance << endl;
+	cout << "Only one dollar bill will be accepted. " << endl;
+	cout << "Only amount between 0 and 100 and multiple of 5 is accepted. " << endl;
+	cout << "Enter 0 to stop the program." << endl;
+	cout << "Machine is now ready." << endl << endl;
+}
